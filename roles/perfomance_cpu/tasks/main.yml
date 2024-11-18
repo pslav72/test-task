@@ -1,0 +1,51 @@
+---
+# tasks file for roles/perfomanceCPU
+
+- name: MAIN | get intel_idle.max_cstate value
+  ansible.builtin.slurp:
+    src: "{{ perfomance_cpu_max_cstate_file_path }}"
+  register: max_cstate_remote
+
+- name: MAIN | decode remote content
+  ansible.builtin.set_fact:
+    max_cstate: "{{ max_cstate_remote['content'] | b64decode | split('\n') | first }}"
+
+- name: MAIN | print intel_idle.max_cstate value
+  ansible.builtin.debug:
+    msg: "{{ max_cstate }}"
+
+- name: MAIN | Apply GRUB settings
+  when:
+    - max_cstate != perfomance_cpu_max_cstate_value
+  block:
+
+    - name: Find exists value in GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.lineinfile:
+        path: "{{ perfomance_cpu_grub_path }}{{ perfomance_cpu_grub_file_name }}"
+        regexp: ".* intel_idle.max_cstate={{ perfomance_cpu_max_cstate_value }}.*"
+        state: absent
+      check_mode: true
+      register: presence
+
+    - name: Replace GRUB_CMDLINE_LINUX_DEFAULT
+      ansible.builtin.lineinfile:
+        path: "{{ perfomance_cpu_grub_path }}{{ perfomance_cpu_grub_file_name }}"
+        regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT=)"(.*)"$'
+        line: '\1"\2 intel_idle.max_cstate={{ perfomance_cpu_max_cstate_value }}"'
+        backrefs: true
+      when: presence.found != 1
+      notify:
+        - Update grub config
+        - Reboot
+
+- name: Print CPU
+  ansible.builtin.debug:
+    msg: '{{ ansible_facts.processor }}'
+
+- name: Print CPU
+  ansible.builtin.debug:
+    msg: '{{ ansible_facts.processor_threads_per_core }}'
+
+- name: Print CPU
+  ansible.builtin.debug:
+    msg: '{{ ansible_facts }}'

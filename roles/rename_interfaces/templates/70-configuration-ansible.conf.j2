@@ -1,0 +1,9 @@
+network:
+  version: 2
+  ethernets:
+    "{{ rename_interfaces_interface_name_to }}":
+      match:
+        macaddress: "{{ rename_interfaces_macaddress }}"
+      dhcp4: true
+      dhcp6: false
+      set-name: "{{ rename_interfaces_interface_name_to }}"

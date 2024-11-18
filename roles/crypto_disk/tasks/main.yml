@@ -1,0 +1,28 @@
+---
+- name: MAIN | Include tasks crypto.luks_device
+  ansible.builtin.include_tasks: luks_device.yml
+  when:
+    - crypto_disk_partitioning_parted_list is defined
+    - not crypto_disk_unmount_all
+  loop: "{{ crypto_disk_partitioning_parted_list }}"
+  loop_control:
+    loop_var: item_disk
+
+- name: MAIN | Include prepaired disk tasks
+  ansible.builtin.include_tasks: prepaired_disk.yml
+  when:
+    - crypto_disk_partitioning_parted_list is defined
+    - item_disk.crypto_luks_device_state_opened == "opened"
+    - not crypto_disk_unmount_all
+  loop: "{{ crypto_disk_partitioning_parted_list }}"
+  loop_control:
+    loop_var: item_disk
+
+- name: MAIN | Include unmount tasks
+  ansible.builtin.include_tasks: unmount.yml
+  when:
+    - crypto_disk_partitioning_parted_list is defined
+    - crypto_disk_unmount_all
+  loop: "{{ crypto_disk_partitioning_parted_list }}"
+  loop_control:
+    loop_var: item_disk

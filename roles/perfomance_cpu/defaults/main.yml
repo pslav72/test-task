@@ -1,0 +1,9 @@
+---
+# defaults file for roles/perfomanceCPU
+perfomance_cpu_max_cstate_file_path: /sys/module/intel_idle/parameters/max_cstate
+perfomance_cpu_max_cstate_value: "1"
+
+perfomance_cpu_grub_path: /etc/default/grub.d/
+perfomance_cpu_grub_file_name: 50-cloudimg-settings.cfg
+
+perfomance_cpu_reboot_vm_after_apply: false

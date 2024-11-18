@@ -1,0 +1,7 @@
+---
+# handlers file for renameInterfaces
+- name: Netplan try
+  ansible.builtin.command: netplan try
+
+- name: Netplan apply
+  ansible.builtin.command: netplan apply

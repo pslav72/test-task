@@ -1,0 +1,14 @@
+- name: LUKS_DEVICE | Module manages LUKS on given device
+  block:
+    - name: Create LUKS container with a passphrase
+      community.crypto.luks_device:
+        device: "{{ item_disk.crypto_luks_device_device }}"
+        state: "{{ item_disk.crypto_luks_device_state }}"
+        passphrase: "{{ crypto_disk_crypto_passphrase }}"
+
+    - name: (Create and) open the LUKS container; name it '{{ item_disk.crypto_luks_device_name }}'
+      community.crypto.luks_device:
+        device: "{{ item_disk.crypto_luks_device_device }}"
+        state: "{{ item_disk.crypto_luks_device_state_opened }}"
+        name: "{{ item_disk.crypto_luks_device_name }}"
+        passphrase: "{{ crypto_disk_crypto_passphrase }}"

@@ -1,0 +1,21 @@
+crypto_disk_crypto_passphrase: TestTest123987
+
+crypto_disk_partitioning_parted_list:
+  - crypto_luks_device_name: cryptoDisk
+    crypto_luks_device_device: /dev/xvdf
+    crypto_luks_device_state: present
+    crypto_luks_device_state_opened: opened
+    parted_device: /dev/mapper/cryptoDisk
+    parted_partEnd: 100%
+    parted_number: 1
+    parted_label: msdos
+    parted_removeDevice: False
+    parted_resizeDevice: False
+    parted_newPartition: True
+    parted_part_start: 0%
+    filesystem_fstype: ext4
+    filesystem_opts: ""
+    mount_path: /mnt
+    mount_opts: ""
+    mount_fstype: ext4
+    mount_state: ephemeral

@@ -1,0 +1,66 @@
+# tasks file for parted
+- name: Prepaired disk
+  block:
+    - name: State a '{{ item_disk.filesystem_fstype }}'
+      community.general.filesystem:
+        dev: '{{ item_disk.parted_device }}'
+        fstype: '{{ item_disk.filesystem_fstype }}'
+      when:
+        - item_disk.parted_device != "/dev/xxx"
+      check_mode: true
+      register: state_file_system
+
+    - name: Print state filesystem
+      when:
+        - item_disk.parted_device != "/dev/xxx"
+      ansible.builtin.debug:
+        msg: "{{ state_file_system }}"
+
+    - name: Create a new primary partition
+      community.general.parted:
+        device: '{{ item_disk.parted_device }}'
+        number: '{{ item_disk.parted_number }}'
+        label: '{{ item_disk.parted_label | default("msdos") }}'
+        part_start: '{{ item_disk.parted_part_start | default("0%") }}'
+        state: present
+      when:
+        - item_disk.parted_newPartition | default(False)
+        - item_disk.parted_device != "/dev/xxx"
+        - state_file_system.changed
+
+    - name: Read device information (always use unit when probing)
+      community.general.parted:
+        device: '{{ item_disk.parted_device }}'
+        unit: MiB
+      register: device_info
+
+    - name: Read device information
+      ansible.builtin.debug:
+        msg: Read device information '{{ device_info }}'
+
+    - name: Remove partitions from disk "{{ item_disk.parted_device }}"
+      community.general.parted:
+        device: '{{ item_disk.parted_device }}'
+        number: '{{ item_disk.parted_number }}'
+        state: absent
+      loop: '{{ device_info.partitions }}'
+      when: item_disk.parted_removeDevice|default(false)
+
+    - name: Create a '{{ item_disk.filesystem_fstype }}'
+      community.general.filesystem:
+        fstype: '{{ item_disk.filesystem_fstype }}'
+        dev: '{{ item_disk.parted_device }}'
+        opts: '{{ item_disk.filesystem_opts }}'
+      when:
+        - item_disk.parted_newPartition | default(false)
+        - item_disk.parted_device != "/dev/xxx"
+
+    - name: Include mount tasks
+      ansible.builtin.include_tasks: mount.yml
+      vars:
+        src: '{{ item_disk.parted_device }}'
+        path: '{{ item_disk.mount_path }}'
+        fstype: '{{ item_disk.mount_fstype }}'
+        state: '{{ item_disk.mount_state }}'
+      when:
+        - ansible_facts.mounts | selectattr("mount", "==", item_disk.mount_path) | length == 0

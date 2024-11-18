@@ -1,0 +1,8 @@
+---
+- name: Rename Interfaces
+  hosts: all
+  become: true
+  roles:
+    - role: rename_interfaces
+      tags:
+        - rename_interfaces

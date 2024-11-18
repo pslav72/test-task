@@ -1,0 +1,8 @@
+---
+- name: Perfomance CPU
+  hosts: all
+  become: true
+  roles:
+    - role: crypto_disk
+      tags:
+        - crypto_disk

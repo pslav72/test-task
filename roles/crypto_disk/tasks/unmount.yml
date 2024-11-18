@@ -1,0 +1,18 @@
+- name: MAIN | Unmount path '{{ item_disk.mount_path }}'
+  tags:
+    - umount
+  block:
+    - name: Include unmount tasks
+      ansible.builtin.include_tasks: mount.yml
+      vars:
+        src: '{{ item_disk.parted_device }}'
+        path: '{{ item_disk.mount_path }}'
+        fstype: '{{ item_disk.mount_fstype }}'
+        state: 'unmounted'
+      when:
+        - ansible_facts.mounts | selectattr("mount", "==", item_disk.mount_path) | length == 1
+
+    - name: Close the existing LUKS container '{{ item_disk.crypto_luks_device_name }}'
+      community.crypto.luks_device:
+        name: "{{ item_disk.crypto_luks_device_name }}"
+        state: "closed"

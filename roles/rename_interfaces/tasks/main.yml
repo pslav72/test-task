@@ -1,0 +1,26 @@
+---
+# tasks file for renameInterfaces
+- name: Block rename interfaces
+  when:
+    - ansible_facts[rename_interfaces_interface_name_from] is defined
+  block:
+    - name: Print interfaces info
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts[rename_interfaces_interface_name_from] }}"
+
+    - name: Get mac_address interfaces
+      ansible.builtin.set_fact:
+        rename_interfaces_macaddress: "{{ ansible_facts[rename_interfaces_interface_name_from].macaddress }}"
+
+    - name: Print mac address
+      ansible.builtin.debug:
+        msg: "{{ rename_interfaces_macaddress }}"
+
+    - name: Configuring Netplan
+      ansible.builtin.template:
+        src: "{{ rename_interfaces_netplan_config_file_src }}"
+        dest: "{{ rename_interfaces_netplan_config_file_dst }}"
+        mode: "{{ rename_interfaces_netplan_config_file_mode }}"
+      notify:
+        - Netplan try
+        - Netplan apply

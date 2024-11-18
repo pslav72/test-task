@@ -1,0 +1,8 @@
+---
+# defaults file for renameInterfaces
+rename_interfaces_interface_name_from: xxx0
+rename_interfaces_interface_name_to: xxx0
+
+rename_interfaces_netplan_config_file_src: 70-configuration-ansible.conf.j2
+rename_interfaces_netplan_config_file_dst: /etc/netplan/configuration-ansible.conf
+rename_interfaces_netplan_config_file_mode: "0600"

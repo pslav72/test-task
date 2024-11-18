@@ -1,0 +1,9 @@
+---
+# handlers file for roles/perfomanceCPU
+- name: Update grub config
+  ansible.builtin.command: update-grub
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: "Rebooting machine in 5 seconds"
+  when: perfomance_cpu_reboot_vm_after_apply

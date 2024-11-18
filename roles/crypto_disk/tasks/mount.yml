@@ -1,0 +1,6 @@
+- name: Managed mount path '{{ fstype }}'
+  ansible.posix.mount:
+    src: '{{ src }}'
+    path: '{{ path }}'
+    fstype: '{{ fstype }}'
+    state: '{{ state }}'

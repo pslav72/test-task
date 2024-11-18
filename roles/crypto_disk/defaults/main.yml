@@ -1,0 +1,22 @@
+---
+crypto_disk_unmount_all: false
+
+crypto_disk_crypto_passphrase: changeme
+
+crypto_disk_partitioning_parted_list:
+  - crypto_luks_device_name: cryptoDisk
+    crypto_luks_device_device: /dev/xxx
+    crypto_luks_device_state: present
+    crypto_luks_device_state_opened: opened
+    parted_device: /dev/xxx
+    parted_partEnd: 100%
+    parted_number: 1
+    parted_label: msdos
+    parted_removeDevice: false
+    parted_newPartition: true
+    parted_part_start: 0%
+    filesystem_fstype: ext4
+    filesystem_opts: -cc
+    mount_path: /mnt
+    mount_fstype: ext4
+    mount_state: absent
